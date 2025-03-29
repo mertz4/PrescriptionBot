@@ -32,27 +32,8 @@ def test():
     return "success"
 
 
-@app.route('/userInformation_input', methods=['POST'])
-def userInformation_input():
-    try:
-        user_name = request.form['userName']
-        phone_number = request.form['phoneNumber']
-        user_email = request.form['userEmail']
 
-        print('Username =', user_name)
-        print('Phone Number =', phone_number)
-        print('User Email =', user_email)
-
-        #  It's good practice to return a JSON response, even on success
-        return jsonify({"message": "User information received successfully"}), 200
-
-    except (ValueError, KeyError) as e:
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": "An unexpected error occurred"}), 500
-
-
-@app.route('/prescription_input', methods=['POST'])
+@app.route('/flattened_prescription_input', methods=['POST'])
 def prescription_input():
     try:
         start_date_str = request.form['startDate']
@@ -94,7 +75,7 @@ def prescription_input():
         # Insert into database
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO prescriptions (user_id, medication_name, description, start_date, end_date, frequency, pills_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO flattened_prescriptions (user_id, medication_name, description, start_date, end_date, frequency, pills_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (user_id, medication_name, description_med, start_date, end_date, frequency_str, pills_count))  # Corrected variable name
         mysql.connection.commit()
         cur.close()
@@ -104,7 +85,7 @@ def prescription_input():
             'medication_name': medication_name,
             'description_med': description_med,
             'duration': duration,
-            'end_date': end_date.strftime('%Y-%m-%d'),
+            'end_date': str(prescription[5]),
             'frequency': frequency_str,
             'pills_count': pills_count,
             'schedule': schedule,
@@ -119,11 +100,11 @@ def prescription_input():
         return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
 
 
-@app.route('/prescriptions/<int:user_id>', methods=['GET'])
+@app.route('/flattened_prescriptions/<int:user_id>', methods=['GET'])
 def get_user_prescriptions(user_id):
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM prescriptions WHERE user_id = %s", (user_id,))
+        cur.execute("SELECT * FROM flattened_prescriptions WHERE user_id = %s", (user_id,))
         prescriptions = cur.fetchall()
         cur.close()
 
@@ -138,8 +119,8 @@ def get_user_prescriptions(user_id):
                 'user_id': prescription[1],
                 'medication_name': prescription[2],
                 'description_med': prescription[3],
-                'start_date': prescription[4].strftime('%Y-%m-%d'),
-                'end_date': prescription[5].strftime('%Y-%m-%d'),
+                'start_date': str(prescription[4]),
+                'end_date': str(prescription[5]),
                 'frequency': prescription[6],
                 'pills_count': prescription[7],
                 # Add other fields as necessary
@@ -196,7 +177,7 @@ def update_prescription(prescription_id):
         # Update database
         cur = mysql.connection.cursor()
         cur.execute("""
-            UPDATE prescriptions 
+            UPDATE flattened_prescriptions 
             SET user_id = %s, medication_name = %s, description = %s, start_date = %s, end_date = %s, 
             frequency = %s, pills_count = %s
             WHERE id = %s
@@ -206,11 +187,11 @@ def update_prescription(prescription_id):
 
         response = {
             'prescription_id': prescription_id,
-            'start_date': start_date.strftime('%Y-%m-%d'),
+            'start_date': str(prescription[4]),
             'medication_name': medication_name,
             'description_med': description_med,
             'duration': duration,
-            'end_date': end_date.strftime('%Y-%m-%d'),
+            'end_date': str(prescription[5]),
             'frequency': frequency_str,
             'pills_count': pills_count,
             'schedule': schedule,
@@ -223,11 +204,11 @@ def update_prescription(prescription_id):
         return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
 
 # New route to get all prescriptions
-@app.route('/prescriptions', methods=['GET'])
+@app.route('/flattened_prescriptions', methods=['GET'])
 def get_all_prescriptions():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM prescriptions")
+        cur.execute("SELECT * FROM flattened_prescriptions")
         rows = cur.fetchall()
         cur.close()
 
@@ -250,6 +231,40 @@ def get_all_prescriptions():
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
+
+
+@app.route('/flattened_prescriptions/<user_id>', methods=['GET'])
+def get_flattened_prescriptions(user_id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM flattened_prescriptions WHERE user_id = %s", (user_id,))
+        rows = cur.fetchall()
+        cur.close()
+
+        from collections import defaultdict
+
+        users_data = defaultdict(list)
+
+        for row in rows:
+            user_id = row[1]
+            prescription = {
+                "prescription_id": row[0],
+                "date_purch": str(row[2]),
+                "tod": row[3],
+                "medication_name": row[4],
+                "description_med": row[5],
+                "dosage": row[6],
+                "pills_count": row[7],
+                "frequency": row[8],
+                "dow": row[9]
+            }
+            users_data[user_id].append(prescription)
+
+        return jsonify(users_data), 200
+
+    except Exception as e:
+        return jsonify({"error": "Unexpected error: " + str(e)}), 500
+
 
 
 if __name__ == '__main__':
