@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'os.getenv('')'  # Use os.getenv()
-app.config['MYSQL_DATABASE'] = 'flask'
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = 'Prescription_Bot'
 
 mysql = MySQL(app)  # Initialize MySQL
 
@@ -228,26 +228,25 @@ def get_all_prescriptions():
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM prescriptions")
-        prescriptions = cur.fetchall()
+        rows = cur.fetchall()
         cur.close()
 
-        # Convert the data into a list of dictionaries
-        prescription_list = []
-        for prescription in prescriptions:
-            prescription_dict = {
-                'id': prescription[0],
-                'user_id': prescription[1],
-                'medication_name': prescription[2],
-                'description_med': prescription[3],
-                'start_date': prescription[4].strftime('%Y-%m-%d'),
-                'end_date': prescription[5].strftime('%Y-%m-%d'),
-                'frequency': prescription[6],
-                'pills_count': prescription[7],
-                # Add other fields as necessary
-            }
-            prescription_list.append(prescription_dict)
-        #print(prescription_list)
-        return jsonify(prescription_list), 200
+        # Build a simple list of dicts assuming your table columns are:
+        # (id, user_id, medication_name, description_med, start_date, end_date, frequency, pills_count)
+        prescriptions = []
+        for row in rows:
+            prescriptions.append({
+                "id": row[0],
+                "user_id": row[1],
+                "medication_name": row[2],
+                "description_med": row[3],
+                "start_date": str(row[4]),  # safely convert date to string
+                "end_date": str(row[5]),
+                "frequency": row[6],
+                "pills_count": row[7]
+            })
+
+        return jsonify(prescriptions), 200
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
