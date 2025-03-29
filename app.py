@@ -23,13 +23,12 @@ def home():
 
 @app.route('/test', methods=['POST'])
 def test():
-    num = request.form['num']
-    a = request.form["test"]
-
-    print(num)
-    print(a)
-
-    return "success"
+    num = request.args.get('num')
+    if num:
+        # Process num
+        return f"You entered: {num}"
+    else:
+        return "Num field is missing."
 
 
 
