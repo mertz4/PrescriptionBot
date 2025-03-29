@@ -1,0 +1,72 @@
+[
+  {
+    "medication_name": "Lisinopril",
+    "date_purch": "2025-01-15",
+    "pills_count": 30,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "10mg",
+    "frequency": 1,
+    "tod": ["Morning"],
+    "description_med": "Take on an empty stomach, 1 hour before breakfast"
+  },
+  {
+    "medication_name": "Metformin",
+    "date_purch": "2025-02-03",
+    "pills_count": 60,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "500mg",
+    "frequency": 2,
+    "tod": ["Morning", "Evening"],
+    "description_med": "Take with meals to minimize stomach upset"
+  },
+  {
+    "medication_name": "Atorvastatin",
+    "date_purch": "2025-01-10",
+    "pills_count": 30,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "20mg",
+    "frequency": 1,
+    "tod": ["Evening"],
+    "description_med": null
+  },
+  {
+    "medication_name": "Prednisone",
+    "date_purch": "2025-03-10",
+    "pills_count": 20,
+    "dow": ["Mon", "Wed", "Fri"],
+    "dosage": "5mg",
+    "frequency": 1,
+    "tod": ["Morning"],
+    "description_med": "Take with food. Do not stop taking this medication abruptly."
+  },
+  {
+    "medication_name": "Levothyroxine",
+    "date_purch": "2024-11-05",
+    "pills_count": 90,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "75mcg",
+    "frequency": 1,
+    "tod": ["Morning"],
+    "description_med": "Take on an empty stomach 30-60 minutes before breakfast"
+  },
+  {
+    "medication_name": "Ibuprofen",
+    "date_purch": "2025-03-20",
+    "pills_count": 30,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "200mg",
+    "frequency": 3,
+    "tod": ["Morning", "Afternoon", "Evening"],
+    "description_med": "Take with food or milk"
+  },
+  {
+    "medication_name": "Sertraline",
+    "date_purch": "2025-01-01",
+    "pills_count": 30,
+    "dow": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "dosage": "50mg",
+    "frequency": 1,
+    "tod": null,
+    "description_med": null
+  }
+]
